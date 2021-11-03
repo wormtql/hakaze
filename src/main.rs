@@ -31,7 +31,7 @@ fn set_up_objects(scene: &mut Scene) {
     // obj.set_material(Box::new(ChessBoardMaterial::new()) as Box<dyn Material>);
 
     let mut obj2 = Object::from_file("models/forlai.obj");
-    obj2.scale_uniform(1.5).translate_x(-1.0).translate_y(1.0).translate_z(-5.0);
+    obj2.scale_uniform(1.5).translate_x(-1.0).translate_y(1.0).translate_z(-4.0);
     obj2.rotate_x(1.0);
     obj2.rotate_y(1.0);
     obj2.set_material(Box::new(NaiveMaterial::new(
@@ -72,8 +72,8 @@ fn set_up_objects(scene: &mut Scene) {
 }
 
 fn main() {
-    let render_width = 500;
-    let render_height = 500;
+    let render_width = 100;
+    let render_height = 100;
 
     let mut scene: Scene = Scene::new();
     set_up_objects(&mut scene);
@@ -103,7 +103,7 @@ fn main() {
     );
     scene.add_light(Box::new(light1) as Box<dyn Light>);
     scene.add_light(Box::new(light2) as Box<dyn Light>);
-    scene.add_light(Box::new(light3) as Box<dyn Light>);
+    // scene.add_light(Box::new(light3) as Box<dyn Light>);
 
 
     let mut camera = PerspectiveCamera::new(PI / 2.0, 1.0, 0.1, 10.0);

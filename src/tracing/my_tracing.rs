@@ -64,7 +64,7 @@ impl<'a> MyTracing<'a> {
             scene,
             camera,
 
-            max_depth: 10,
+            max_depth: 8
         }
     }
 
@@ -105,7 +105,7 @@ impl<'a> MyTracing<'a> {
                 // }
                 let shadow_ray_intersect_result = self.scene.intersect(&shadow_ray);
 
-                let light_color = light.get_color(point.vertex.clone());
+                // let light_color = light.get_color(point.vertex.clone());
                 let light_ambient_strength = light.get_ambient_strength(point.vertex.clone());
                 let light_diffuse_strength = light.get_diffuse_strength(point.vertex.clone());
                 let light_specular_strength = light.get_specular_strength(point.vertex.clone());
@@ -116,22 +116,28 @@ impl<'a> MyTracing<'a> {
                     let shadow_ray_intersect_pos = shadow_ray_intersect_result.point.unwrap().vertex;
                     light.is_blocked(point.vertex, shadow_ray_intersect_pos)
                 };
-                if !is_blocked {
+
+                let light_color = if !is_blocked {
                     // ambient
                     // let ambient = light_color * light_ambient_strength;
                     // color += ambient.mul_element_wise(object_base_color);
+                    light.get_color(point.vertex)
+                } else if shadow_ray.dir.dot(normal) > 0.0 {
+                    self.trace_helper(&shadow_ray, depth + 1)
+                } else {
+                    Vector3::new(0.0, 0.0, 0.0)
+                };
 
-                    // diffuse
-                    let diffuse = light_color * shadow_ray.dir.dot(normal.clone()).max(0.0) * diffuse_strength;
+                // diffuse
+                let diffuse = light_color * shadow_ray.dir.dot(normal.clone()).max(0.0) * diffuse_strength;
 
-                    // specular
-                    let half = (-ray.dir + shadow_ray.dir).normalize();
-                    // let shininess = collide_object.material.get_shininess(u, v);
-                    let shininess = 128.0;
-                    let specular = light_color * half.dot(normal.clone()).max(0.0).powf(shininess) * specular_strength;
+                // specular
+                let half = (-ray.dir + shadow_ray.dir).normalize();
+                // let shininess = collide_object.material.get_shininess(u, v);
+                let shininess = 128.0;
+                let specular = light_color * half.dot(normal.clone()).max(0.0).powf(shininess) * specular_strength;
 
-                    color += (diffuse + specular).mul_element_wise(object_base_color);
-                }
+                color += (diffuse + specular).mul_element_wise(object_base_color);
             }
         // }
 
